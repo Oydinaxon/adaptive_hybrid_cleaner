@@ -1,1 +1,44 @@
+import pandas as pd
+import numpy as np
+
+np.random.seed(42)
+n = 50000  # 50,000 qator
+
+# Numeric columns
+age = np.random.randint(18, 80, n).astype(float)
+age[np.random.choice(n, 2000, replace=False)] = np.nan  # random missing
+age[np.random.choice(n, 500, replace=False)] = age.max() + 50  # outliers
+
+income = np.random.randint(15000, 200000, n).astype(float)
+income[np.random.choice(n, 2000, replace=False)] = np.nan
+income[np.random.choice(n, 500, replace=False)] = income.min() - 10000  # outliers
+
+# Categorical columns
+gender = np.random.choice(['Male', 'Female', None, ''], n)
+country = np.random.choice(['US', 'DE', 'FR', 'IT', 'IE', 'AT', 'NL', None], n)
+membership = np.random.choice(['Gold', 'Silver', 'Bronze', 'Platinum', 'Diamond'], n, 
+                              p=[0.4,0.3,0.2,0.05,0.05])
+
+# Create DataFrame
+df = pd.DataFrame({
+    'Age': age,
+    'Income': income,
+    'Gender': gender,
+    'Country': country,
+    'Membership': membership
+})
+
+# Add duplicates
+df = pd.concat([df, df.sample(1000)], ignore_index=True)  # add 1000 duplicate rows
+
+# Shuffle dataset
+df = df.sample(frac=1).reset_index(drop=True)
+
+# Save CSV
+df.to_csv("synthetic_dirty_large_dataset.csv", index=False)
+pd.read_csv("synthetic_dirty_large_dataset.csv")
+
+
+
+
 
